@@ -1,22 +1,22 @@
 import conf from "../conf/conf";
 import { Client, ID, Databases, Storage, Permission, Role } from 'appwrite'
 
-export class Service{
+export class Service {
     client = new Client()
     databases
     bucket
 
 
-    constructor(){
+    constructor() {
         this.client
-                .setEndpoint(conf.appwriteUrl)
-                .setProject(conf.appwriteProjectId);
+            .setEndpoint(conf.appwriteUrl)
+            .setProject(conf.appwriteProjectId);
         this.databases = new Databases(this.client)
         this.bucket = new Storage(this.client)
     }
-    
 
-      async createPost({title, slug, Content, FeaturedImage, userid}){
+
+    async createPost({ title, slug, Content, FeaturedImage, userid }) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -35,52 +35,52 @@ export class Service{
         }
     }
 
-    async updatePost(slug , {title , Content , FeaturedImage}){
+    async updatePost(slug, { title, Content, FeaturedImage }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
                 {
-                   title,
-                   Content,
-                   FeaturedImage
+                    title,
+                    Content,
+                    FeaturedImage
                 }
-            )            
+            )
         } catch (error) {
             console.log("Appwrite Service :: UpdatePost :: error ", error);
             throw error;
         }
     }
 
-    async deletePost(slug){
+    async deletePost(slug) {
         try {
-             await this.databases.deleteDocument(
+            await this.databases.deleteDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug
-             )     
-             return true       
+            )
+            return true
         } catch (error) {
-            console.log("Appwrite :: Delete Post Error :: Error:" , error)
-            return false            
+            console.log("Appwrite :: Delete Post Error :: Error:", error)
+            return false
         }
     }
 
-    async getPost(slug){
+    async getPost(slug) {
         try {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug
-            )            
+            )
         } catch (error) {
             console.log("Appwrite Service :: GetPost Error :: Error : ", error)
             return false
         }
     }
 
-    async getPosts(queries = []){
+    async getPosts(queries = []) {
         try {
             return await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
@@ -88,14 +88,14 @@ export class Service{
                 queries
             )
         } catch (error) {
-            console.log("Appwrite Service :: GetPosts Error :: Error : " , error) 
-            return false           
+            console.log("Appwrite Service :: GetPosts Error :: Error : ", error)
+            return false
         }
     }
 
     //file upload services
 
-    async uploadFile(file){
+    async uploadFile(file) {
         try {
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
@@ -104,25 +104,25 @@ export class Service{
                 [Permission.read(Role.any())],
             )
         } catch (error) {
-            console.log("Appwrite Service :: upload File Error :: Error : ",error)
+            console.log("Appwrite Service :: upload File Error :: Error : ", error)
         }
     }
 
-    async deleteFile(fileID){
-         try {
+    async deleteFile(fileID) {
+        try {
             await this.bucket.deleteFile(
                 conf.appwriteBucketId,
                 fileID
             )
             return true
 
-         } catch (error) {
-            console.log("Appwrite Service :: DeleteFile :: Error: ",error)
+        } catch (error) {
+            console.log("Appwrite Service :: DeleteFile :: Error: ", error)
             return false
-         }
+        }
     }
 
-    getFilePreview(fileID){
+    getFilePreview(fileID) {
         if (!fileID) {
             return "https://via.placeholder.com/400x300?text=No+Image";
         }
